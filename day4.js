@@ -10,48 +10,26 @@ import fs from "fs";
 //
 // const lottery = [7, 4, 9, 5, 11, 17, 23, 2, 0, 14, 21, 24, 10, 16, 13, 6, 15, 25, 12, 22, 18, 20, 8, 19, 3, 26, 1];
 
-console.log("Синхронное чтение файла")
-let fileContent = 1
-function reader() {
-  fileContent = fs.readFileSync("day4.txt", "utf8");
-}
-reader()
-const res = fileContent.split('   ')[0].split('\n\n');
-let out = [];
-for (let i = 0; i<res.length; i++) {
-  out.push(res[i].split('\n'));
-}
-out = out.slice(0, out.length - 1);
-for (let i = 0; i<out.length; i++) {
-  for (let j = 0; j<out[i].length; j++) {
-    out[i][j] = out[i][j].split(' ').filter((item) => item);
+const fileContent = fs.readFileSync("./textInput/day4/boards.txt", "utf8");
+
+let input = fileContent
+  .split('   ')[0]
+  .split('\n\n')
+  .map((item) => item.split('\n'));
+
+input.pop();
+
+for (let i = 0; i<input.length; i++) {
+  for (let j = 0; j<input[i].length; j++) {
+    input[i][j] = input[i][j].split(' ').filter((item) => item).map((item2) => Number(item2));
   }
 }
 
-
-for (let m = 0; m<out.length; m++) {
-  for (let i = 0; i < out[0].length; i++) {
-    for (let j = 0; j < out[0][0].length; j++) {
-      out[m][i][j] = Number(out[m][i][j]);
-    }
-  }
-}
-
-const input = out;
-
-console.log("Синхронное чтение файла")
-let file = 1
-function reader2() {
-  file = fs.readFileSync("day4Lottery.txt", "utf8");
-}
-reader2()
-const lottery = file.split(',').map((item) => Number(item));
+const fileNumbers = fs.readFileSync("./textInput/day4/numbers.txt", "utf8");
+const lottery = fileNumbers.split(',').map((item) => Number(item));
 
 class Coordinate {
-  constructor(boardNumber, coordinateX, coordinateY, value, isMarked) {
-    this.boardNumber = boardNumber
-    this.x = coordinateX;
-    this.y = coordinateY;
+  constructor(value, isMarked) {
     this.value = value;
     this.isMarked = isMarked;
   }
@@ -60,157 +38,13 @@ class Coordinate {
 for (let m = 0; m<input.length; m++) {
   for (let i = 0; i < input[0].length; i++) {
     for (let j = 0; j < input[0][0].length; j++) {
-      input[m][i][j] = new Coordinate(m, j, i, input[m][i][j], false);
+      input[m][i][j] = new Coordinate(input[m][i][j], false);
     }
   }
 }
 
 let result = 0;
 
-for (let i = 0; i<lottery.length; i++) {
-  mark(lottery[i])
-  const string = isWinString();
-  if (string.isWin) {
-    if (input.length >= 2) {
-      console.log(input)
-      console.log('____________________')
-      input.splice(string.board, 1)
-    }
-  }
-  const column = isWinColumn();
-  if (column.isWin) {
-    if (input.length >= 2) {
-      input.splice(string.board, 1)
-    }
-  }
-  if (input.length === 1) {
-    const output = sum()
-    result = output * lottery[i]
-    break;
-  }
-}
-
-console.log(result)
-
-function sum() {
-  let sum = 0;
-  for (let i = 0; i< input[0].length; i++) {
-    for (let j = 0; j < input[0][0].length; j++) {
-      if (!input[0][i][j].isMarked) {
-        sum = sum + input[0][i][j].value
-      }
-    }
-  }
-  return sum;
-}
-
-function mark(number) {
-  for (let m = 0; m < input.length; m++) {
-    for (let i = 0; i < input[0].length; i++) {
-      for (let j = 0; j < input[0][0].length; j++) {
-        if (input[m][j][i].value === number) {
-          input[m][j][i].isMarked = true;
-        }
-      }
-    }
-  }
-}
-
-function isWinColumn() {
-  for (let m = 0; m < input.length; m++) {
-    for (let i = 0; i < input[0][0].length; i++) {
-    let count = 0;
-    for (let j = 0; j < input[0].length; j++) {
-      if (input[m][j][i].isMarked) {
-        count += 1
-      }
-    }
-    if (count === input[m][0].length) {
-      return {isWin: true, board: m};
-    }
-    }
-  }
-  return {isWin: false, board: null}
-}
-
-function isWinString() {
-  for (let m = 0; m < input.length; m++) {
-    for (let i = 0; i < input[0].length; i++) {
-      let count = 0;
-      for (let j = 0; j < input[0][0].length; j++) {
-        if (input[m][i][j].isMarked) {
-          count += 1
-        }
-      }
-      if (count === input[0][0].length) {
-        return {isWin: true, board: m}
-      }
-    }
-  }
-  return {isWin: false, board: null}
-}
-//
-
-// console.log("Синхронное чтение файла")
-// let fileContent = 1
-// function reader() {
-//   fileContent = fs.readFileSync("day4.txt", "utf8");
-// }
-// reader()
-// const res = fileContent.split('   ')[0].split('\n\n');
-// let out = [];
-// for (let i = 0; i<res.length; i++) {
-//   out.push(res[i].split('\n'));
-// }
-// out = out.slice(0, out.length - 1);
-// for (let i = 0; i<out.length; i++) {
-//   for (let j = 0; j<out[i].length; j++) {
-//     out[i][j] = out[i][j].split(' ').filter((item) => item);
-//   }
-// }
-//
-//
-// for (let m = 0; m<out.length; m++) {
-//   for (let i = 0; i < out[0].length; i++) {
-//     for (let j = 0; j < out[0][0].length; j++) {
-//       out[m][i][j] = Number(out[m][i][j]);
-//     }
-//   }
-// }
-//
-// const input = out;
-//
-// console.log("Синхронное чтение файла")
-// let file = 1
-// function reader2() {
-//   file = fs.readFileSync("day4Lottery.txt", "utf8");
-// }
-// reader2()
-// const lottery = file.split(',').map((item) => Number(item));
-//
-//
-// class Coordinate {
-//   constructor(boardNumber, coordinateX, coordinateY, value, isMarked) {
-//     this.boardNumber = boardNumber
-//     this.x = coordinateX;
-//     this.y = coordinateY;
-//     this.value = value;
-//     this.isMarked = isMarked;
-//   }
-// }
-//
-// for (let m = 0; m<input.length; m++) {
-//   for (let i = 0; i < input[0].length; i++) {
-//     for (let j = 0; j < input[0][0].length; j++) {
-//       input[m][i][j] = new Coordinate(m, j, i, input[m][i][j], false);
-//     }
-//   }
-// }
-// //
-// // const lottery = [7, 4, 9, 5, 11, 17, 23, 2, 0, 14, 21, 24, 10, 16, 13, 6, 15, 25, 12, 22, 18, 20, 8, 19, 3, 26, 1];
-// //
-// let result = 0;
-//
 // for (let i = 0; i<lottery.length; i++) {
 //   mark(lottery[i])
 //   const string = isWinString();
@@ -287,4 +121,102 @@ function isWinString() {
 //   }
 //   return {isWin: false, board: null}
 // }
+
+function main() {
+  let winBoards;
+  for (let i = 0; i < lottery.length; i++) {
+    mark(lottery[i])
+    winBoards = isWinString();
+    if (winBoards.length && input.length > 1) {
+      winBoards.map(item => input.splice(item, 1))
+    }
+    winBoards = isWinColumn();
+    if (winBoards.length && input.length > 1) {
+      winBoards.map(item => input.splice(item, 1))
+    }
+    if (input.length === 1) {
+      return {number: lottery[i]}
+    }
+  }
+}
+
+const stoppedNumber = main()
+console.log(stoppedNumber);
+let winBoards;
+for (let i = lottery.indexOf(stoppedNumber.number)+1; i < lottery.length; i++) {
+  mark(lottery[i])
+  winBoards = isWinString();
+  if (winBoards.length) {
+    result = sum() * lottery[i];
+    break;
+  }
+  winBoards = isWinColumn();
+  if (winBoards.length) {
+    result = sum() * lottery[i]
+    break;
+  }
+}
+console.log('result', result);
+
+function sum() {
+  let sum = 0;
+  for (let i = 0; i < input[0].length; i++) {
+    for (let j = 0; j < input[0][0].length; j++) {
+      if (!input[0][i][j].isMarked) {
+        sum = sum + input[0][i][j].value
+      }
+    }
+  }
+  return sum;
+}
+
+function mark(number) {
+  for (let m = 0; m < input.length; m++) {
+    for (let i = 0; i < input[0].length; i++) {
+      for (let j = 0; j < input[0][0].length; j++) {
+        if (input[m][j][i].value === number) {
+          input[m][j][i].isMarked = true;
+        }
+      }
+    }
+  }
+}
+
+function isWinColumn() {
+  let winBoards = []
+  for (let m = 0; m < input.length; m++) {
+    for (let i = 0; i < input[0][0].length; i++) {
+      let count = 0;
+      for (let j = 0; j < input[0].length; j++) {
+        if (input[m][j][i].isMarked) {
+          count += 1
+        }
+      }
+      if (count === input[m][0].length) {
+        winBoards.push(m);
+        break;
+      }
+    }
+  }
+  return winBoards
+}
+
+function isWinString() {
+  let winBoards = [];
+  for (let m = 0; m < input.length; m++) {
+    for (let i = 0; i < input[0].length; i++) {
+      let count = 0;
+      for (let j = 0; j < input[0][0].length; j++) {
+        if (input[m][i][j].isMarked) {
+          count += 1
+        }
+      }
+      if (count === input[0][0].length) {
+        winBoards.push(m);
+        break;
+      }
+    }
+  }
+  return winBoards
+}
 
