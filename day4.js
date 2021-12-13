@@ -17,17 +17,14 @@ let input = fileContent
   .split('\n\n')
   .map((item) => item.split('\n'));
 
-input.pop();
-
 for (let i = 0; i<input.length; i++) {
   for (let j = 0; j<input[i].length; j++) {
     input[i][j] = input[i][j].split(' ').filter((item) => item).map((item2) => Number(item2));
   }
 }
 
-const fileNumbers = fs.readFileSync("./textInput/day4/numbers.txt", "utf8");
+let fileNumbers = fs.readFileSync("./textInput/day4/numbers.txt", "utf8");
 const lottery = fileNumbers.split(',').map((item) => Number(item));
-
 class Coordinate {
   constructor(value, isMarked) {
     this.value = value;
@@ -42,6 +39,7 @@ for (let m = 0; m<input.length; m++) {
     }
   }
 }
+input[input.length -1].splice(5, 1)
 
 let result = 0;
 
@@ -123,25 +121,31 @@ let result = 0;
 // }
 
 function main() {
-  let winBoards;
   for (let i = 0; i < lottery.length; i++) {
+    let winBoards = [];
     mark(lottery[i])
     winBoards = isWinString();
     if (winBoards.length && input.length > 1) {
-      winBoards.map(item => input.splice(item, 1))
+      winBoards.map(item => {
+        delete input[item]
+      })
+      input = input.filter((item) => item.length);
     }
     winBoards = isWinColumn();
     if (winBoards.length && input.length > 1) {
-      winBoards.map(item => input.splice(item, 1))
+      winBoards.map(item => {
+        delete input[item]
+      })
+      input = input.filter((item) => item.length);
     }
-    if (input.length === 1) {
+    if (input.filter((item) => item).length === 1) {
       return {number: lottery[i]}
     }
   }
 }
 
+
 const stoppedNumber = main()
-console.log(stoppedNumber);
 let winBoards;
 for (let i = lottery.indexOf(stoppedNumber.number)+1; i < lottery.length; i++) {
   mark(lottery[i])
